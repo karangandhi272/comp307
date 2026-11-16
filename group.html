@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>[Group name]</title>
+  <style>
+    :root { --accent: #1f5f45; --line: #e2e4de; --muted: #6b716c; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font: 15px/1.5 system-ui, sans-serif; color: #1c1f1d; background: #f6f7f4; }
+    header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; padding: 12px 24px; background: #fff; border-bottom: 1px solid var(--line); }
+    main { max-width: 1000px; margin: auto; padding: 24px 16px; }
+    a { color: var(--accent); }
+    small { color: var(--muted); }
+    button, .button { font: inherit; padding: 6px 14px; border: 1px solid var(--line); border-radius: 8px; background: #fff; color: inherit; cursor: pointer; text-decoration: none; }
+    .primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+    input:not([type=radio]):not([type=file]) { font: inherit; width: 100%; padding: 8px 10px; margin: 4px 0 12px; border: 1px solid var(--line); border-radius: 8px; }
+    article, section, dialog { background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 16px; }
+    dialog { width: min(460px, 92vw); }
+    dialog::backdrop { background: rgb(0 0 0 / 0.45); }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+    .row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { text-align: left; padding: 6px; border-bottom: 1px solid var(--line); }
+  </style>
+</head>
+<body>
+  <!-- 3a · Group page — includes 3b quiz, 3c results, 3d upload popups -->
+  <header>
+    <div>
+      <a href="home.html">&larr; Home</a>
+      <strong>[Group name]</strong> <small>[n] members · led by [leader]</small>
+    </div>
+    <nav>
+      <small>Code</small> <code>7F3L-2KQ9</code>
+      <button>Copy</button>
+      <button class="primary" onclick="quiz.showModal()">Start quiz</button>
+    </nav>
+  </header>
+
+  <main class="grid">
+    <section>
+      <h3>Leaderboard</h3>
+      <table>
+        <tr><th>#</th><th>Member</th><th>Notes</th><th>Quizzes</th><th>Score</th></tr>
+          <tr><td>1</td><td>[Member 1]</td><td>[n]</td><td>[n]</td><td><strong>[pts]</strong></td></tr>
+          <tr><td>2</td><td>[Member 2]</td><td>[n]</td><td>[n]</td><td><strong>[pts]</strong></td></tr>
+          <tr><td>3</td><td>[Member 3]</td><td>[n]</td><td>[n]</td><td><strong>[pts]</strong></td></tr>
+          <tr><td>4</td><td>[Member 4]</td><td>[n]</td><td>[n]</td><td><strong>[pts]</strong></td></tr>
+          <tr><td>5</td><td>[Member 5]</td><td>[n]</td><td>[n]</td><td><strong>[pts]</strong></td></tr>
+      </table>
+    </section>
+
+    <section>
+      <div class="row">
+        <h3>Shared notes</h3>
+        <button onclick="upload.showModal()">+ Upload</button>
+      </div>
+      <table>
+        <tr><td>[Topic] lecture notes.txt<br><small>by [Member]</small></td></tr>
+        <tr><td>[Topic] lecture notes.txt<br><small>by [Member]</small></td></tr>
+        <tr><td>[Topic] lecture notes.txt<br><small>by [Member]</small></td></tr>
+      </table>
+    </section>
+
+    <section>
+      <h3>Note preview</h3>
+      <pre>[Selected note contents...]</pre>
+    </section>
+
+    <section>
+      <h3>Members ([n])</h3>
+      <table>
+        <tr><td>[Member 1]</td><td><small>Leader</small></td></tr>
+          <tr><td>[Member 2]</td><td><button>Remove</button></td></tr>
+          <tr><td>[Member 3]</td><td><button>Remove</button></td></tr>
+          <tr><td>[Member 4]</td><td><button>Remove</button></td></tr>
+          <tr><td>[Member 5]</td><td><button>Remove</button></td></tr>
+      </table>
+    </section>
+  </main>
+
+  <!-- 3b · Quiz popup -->
+  <dialog id="quiz">
+    <div class="row">
+      <div><small>Quiz · from [n] shared notes</small><h3>Question 1 of 10</h3></div>
+      <form method="dialog"><button aria-label="Close">&times;</button></form>
+    </div>
+    <form action="#">
+      <p>[Question 1 text, written by the LLM from the group's notes]</p>
+      <p><label><input type="radio" name="answer" value="a"> A. [Option A]</label></p>
+      <p><label><input type="radio" name="answer" value="b"> B. [Option B]</label></p>
+      <p><label><input type="radio" name="answer" value="c"> C. [Option C]</label></p>
+      <p><label><input type="radio" name="answer" value="d"> D. [Option D]</label></p>
+      <div class="row">
+        <button type="button">Back</button>
+        <small>1 of 10 answered</small>
+        <button type="button" class="primary" onclick="quiz.close(); results.showModal()">Next</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- 3c · Quiz results popup -->
+  <dialog id="results">
+    <div class="row"><small>Quiz submitted</small><form method="dialog"><button aria-label="Close">&times;</button></form></div>
+    <h1 style="text-align: center; margin: 0;">[n]/10</h1>
+    <p style="text-align: center;"><small>correct answers</small></p>
+    <table>
+      <tr><td>Points earned</td><td><strong>+[pts]</strong></td></tr>
+      <tr><td>New score</td><td><strong>[pts]</strong></td></tr>
+      <tr><td>Rank</td><td><strong>#[n]</strong> <small>(up [n])</small></td></tr>
+    </table>
+    <p><small>Review</small><br>1✓ 2✓ 3✗ 4✓ 5✓ 6✗ 7✓ 8✓ 9✓ 10✓</p>
+  </dialog>
+
+  <!-- 3d · Upload notes popup -->
+  <dialog id="upload">
+    <div class="row"><h3>Upload notes</h3><form method="dialog"><button aria-label="Close">&times;</button></form></div>
+    <form action="#" method="post" enctype="multipart/form-data">
+      <p><input type="file" name="notes" accept=".txt" multiple></p>
+      <p><small>TXT files only. Notes are shared with everyone in this group.</small></p>
+      <div class="row">
+        <button type="button" onclick="upload.close()">Cancel</button>
+        <button type="submit" class="primary">Upload</button>
+      </div>
+    </form>
+  </dialog>
+</body>
+</html>

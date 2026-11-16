@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign up</title>
+  <style>
+    :root { --accent: #1f5f45; --line: #e2e4de; --muted: #6b716c; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font: 15px/1.5 system-ui, sans-serif; color: #1c1f1d; background: #f6f7f4; }
+    header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; padding: 12px 24px; background: #fff; border-bottom: 1px solid var(--line); }
+    main { max-width: 1000px; margin: auto; padding: 24px 16px; }
+    a { color: var(--accent); }
+    small { color: var(--muted); }
+    button, .button { font: inherit; padding: 6px 14px; border: 1px solid var(--line); border-radius: 8px; background: #fff; color: inherit; cursor: pointer; text-decoration: none; }
+    .primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+    input:not([type=radio]):not([type=file]) { font: inherit; width: 100%; padding: 8px 10px; margin: 4px 0 12px; border: 1px solid var(--line); border-radius: 8px; }
+    article, section, dialog { background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 16px; }
+    dialog { width: min(460px, 92vw); }
+    dialog::backdrop { background: rgb(0 0 0 / 0.45); }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+    .row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { text-align: left; padding: 6px; border-bottom: 1px solid var(--line); }
+  </style>
+</head>
+<body>
+  <!-- 1b · Sign up -->
+  <main style="max-width: 380px; margin-top: 10vh;">
+    <article>
+      <h2>Create account</h2>
+      <form action="#" method="post">
+        <label>Name <input type="text" name="name" placeholder="Your name" required></label>
+        <label>Email <input type="email" name="email" placeholder="you@school.edu" required></label>
+        <label>Password <input type="password" name="password" placeholder="At least 8 characters" minlength="8" required></label>
+        <button type="submit" class="primary" style="width: 100%;">Sign up</button>
+      </form>
+      <p style="text-align: center;"><small>Already have an account?</small> <a href="login.html">Log in</a></p>
+    </article>
+  </main>
+</body>
+</html>

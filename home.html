@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My groups</title>
+  <style>
+    :root { --accent: #1f5f45; --line: #e2e4de; --muted: #6b716c; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font: 15px/1.5 system-ui, sans-serif; color: #1c1f1d; background: #f6f7f4; }
+    header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; padding: 12px 24px; background: #fff; border-bottom: 1px solid var(--line); }
+    main { max-width: 1000px; margin: auto; padding: 24px 16px; }
+    a { color: var(--accent); }
+    small { color: var(--muted); }
+    button, .button { font: inherit; padding: 6px 14px; border: 1px solid var(--line); border-radius: 8px; background: #fff; color: inherit; cursor: pointer; text-decoration: none; }
+    .primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+    input:not([type=radio]):not([type=file]) { font: inherit; width: 100%; padding: 8px 10px; margin: 4px 0 12px; border: 1px solid var(--line); border-radius: 8px; }
+    article, section, dialog { background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 16px; }
+    dialog { width: min(460px, 92vw); }
+    dialog::backdrop { background: rgb(0 0 0 / 0.45); }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+    .row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { text-align: left; padding: 6px; border-bottom: 1px solid var(--line); }
+  </style>
+</head>
+<body>
+  <!-- 2a · Home — includes 2b profile + 2c add group popups -->
+  <header>
+    <strong>[App name]</strong>
+    <nav>
+      <button class="primary" onclick="addGroup.showModal()">+ Add group</button>
+      <button onclick="profile.showModal()">Profile</button>
+    </nav>
+  </header>
+
+  <main>
+    <h2>My groups</h2>
+    <div class="grid">
+      <article>
+        <a href="group.html"><strong>[Group name A]</strong></a> <small>· Leader</small>
+        <p><small>[n] members · [n] notes · you are #1</small></p>
+      </article>
+      <article>
+        <a href="group.html"><strong>[Group name B]</strong></a>
+        <p><small>[n] members · [n] notes · you are #3</small></p>
+      </article>
+      <article>
+        <a href="group.html"><strong>[Group name C]</strong></a>
+        <p><small>[n] members · [n] notes · you are #2</small></p>
+      </article>
+      <article>
+        <a href="group.html"><strong>[Group name D]</strong></a>
+        <p><small>[n] members · [n] notes · you are #4</small></p>
+      </article>
+      <article>
+        <a href="group.html"><strong>[Group name E]</strong></a> <small>· Leader</small>
+        <p><small>[n] members · [n] notes · you are #1</small></p>
+      </article>
+      <button style="border-style: dashed;" onclick="addGroup.showModal()">+ Create or join a group</button>
+    </div>
+  </main>
+
+  <!-- 2b · Profile popup -->
+  <dialog id="profile">
+    <div class="row"><h3>Profile</h3><form method="dialog"><button aria-label="Close">&times;</button></form></div>
+    <p><strong>[Name]</strong><br><small>[email@school.edu]</small></p>
+    <p>Groups joined: <strong>[n]</strong> · Quizzes taken: <strong>[n]</strong></p>
+    <table>
+      <tr><td>[Group name A]</td><td><small>Leader</small></td></tr>
+      <tr><td>[Group name B]</td><td><small>Member</small></td></tr>
+      <tr><td>[Group name C]</td><td><small>Member</small></td></tr>
+    </table>
+    <p><a href="index.html" class="button">Log out</a></p>
+  </dialog>
+
+  <!-- 2c · Add group popup -->
+  <dialog id="addGroup">
+    <div class="row"><h3>Add group</h3><form method="dialog"><button aria-label="Close">&times;</button></form></div>
+    <form action="#" method="post">
+      <label>Join with a group code
+        <input type="text" name="code" placeholder="e.g. 7F3L-2KQ9" required>
+      </label>
+      <button type="submit" class="primary">Join</button>
+    </form>
+    <p style="text-align: center;"><small>or</small></p>
+    <form action="#" method="post">
+      <label>Create a new group
+        <input type="text" name="group_name" placeholder="Group name" required>
+      </label>
+      <button type="submit">Create</button>
+    </form>
+  </dialog>
+</body>
+</html>
