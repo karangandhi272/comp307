@@ -23,18 +23,42 @@
     table { width: 100%; border-collapse: collapse; }
     th, td { text-align: left; padding: 6px; border-bottom: 1px solid var(--line); }
   </style>
+    <script>
+    function signup() {
+
+
+      fetch("api/signup.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: "name="+ encodeURIComponent(document.getElementById("name").value)+"&email="+ encodeURIComponent(document.getElementById("email").value)+"&pass="+encodeURIComponent(document.getElementById("pass").value),
+      })
+      .then(response => response.text())
+      .then(text => {
+        text = text.trim();
+        if (text === "0" || text === "") {
+          alert("Wrong email or password");
+          return;
+        }
+
+        localStorage.setItem("ticket", text);
+        window.location.href = "home.html";
+      })
+      .catch(() => alert("Could not reach the server"));
+    }
+  </script>
+  
 </head>
 <body>
   <!-- 1b · Sign up -->
   <main style="max-width: 380px; margin-top: 10vh;">
     <article>
       <h2>Create account</h2>
-      <form action="#" method="post">
-        <label>Name <input type="text" name="name" placeholder="Your name" required></label>
-        <label>Email <input type="email" name="email" placeholder="you@school.edu" required></label>
-        <label>Password <input type="password" name="password" placeholder="At least 8 characters" minlength="8" required></label>
-        <button type="submit" class="primary" style="width: 100%;">Sign up</button>
-      </form>
+       <div>
+        <label>Name <input type="text" id="name" placeholder="Your name" required></label>
+        <label>Email <input type="email" id="email" placeholder="you@school.edu" required></label>
+        <label>Password <input type="password" id="pass" required></label>
+        <button onclick="signup()" class="primary" style="width: 100%;">Sign Up</button>
+      </div>
       <p style="text-align: center;"><small>Already have an account?</small> <a href="login.html">Log in</a></p>
     </article>
   </main>

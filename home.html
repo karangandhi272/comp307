@@ -23,6 +23,137 @@
     table { width: 100%; border-collapse: collapse; }
     th, td { text-align: left; padding: 6px; border-bottom: 1px solid var(--line); }
   </style>
+  <script src="cleanhtml.js" ></script>
+  <script>
+
+
+    function joinGroup() {
+      fetch("api/joingroup.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: "groupcode="+encodeURIComponent(document.getElementById("code").value)+"&ticket="+ encodeURIComponent(localStorage.getItem("ticket"))
+      })
+      .then(response => response.json())
+    
+      .then((output) => {
+
+        if (output === 0){
+            alert("Couldn't join: check the code"); 
+            return; 
+        }
+        document.getElementById("addGroup").close();
+        getGroups();
+
+      })
+      .catch(() => alert("Could not reach the server"));
+     
+    }
+
+
+    function createGroup() {
+      fetch("api/creategroup.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body:"description="+encodeURIComponent(document.getElementById("description").value) + "&groupname="+encodeURIComponent(document.getElementById("group_name").value)+"&ticket="+ encodeURIComponent(localStorage.getItem("ticket"))
+      })
+      .then(response => response.json())
+    
+      .then((output) => {
+        if (output === 0){
+            alert("Couldn't create"); 
+            return; 
+        }
+        document.getElementById("addGroup").close();
+        getGroups();
+
+      })
+      .catch(() => alert("Could not reach the server"));
+    }
+
+
+
+
+
+
+    function loadProfile() {
+      fetch("api/profile.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: "ticket="+ encodeURIComponent(localStorage.getItem("ticket"))
+      })
+      .then(response => response.json())
+      .then(output => {
+        if (output === 0) { window.location.href = "login.html"; return; }
+
+        let rows = '';
+        for (let i = 0; i < output.groups.length; i++) {
+          const role = output.groups[i].role === "leader" ? "Leader" : "Member";
+          rows += `<tr><td>${escapeHtml(output.groups[i].name)}</td><td><small>${role}</small></td></tr>`;
+        }
+        if (rows === '') {
+          rows = `<tr><td><small>You haven't joined any groups yet.</small></td></tr>`;
+        }
+
+        let htmlContent = `
+          <div class="row"><h3>Profile</h3><form method="dialog"><button aria-label="Close">&times;</button></form></div>
+          <p><strong>${escapeHtml(output.display_name)}</strong><br><small>${escapeHtml(output.email)}</small></p>
+          <p>Groups joined: <strong>${output.groups.length}</strong> · Quizzes taken: <strong>${output.quizzes_taken}</strong></p>
+          <table>${rows}</table>
+          <p><button onclick="logout()">Log out</button></p>
+        `;
+
+
+        document.getElementById("profile").innerHTML = htmlContent;
+        document.getElementById("profile").showModal();
+      })
+      .catch(() => alert("Could not reach the server"));
+    }
+
+    function logout() {
+      fetch("api/logout.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: "ticket="+ encodeURIComponent(localStorage.getItem("ticket"))
+      })
+      .then(() => {
+        localStorage.removeItem("ticket");
+        window.location.href = "index.html";
+      });
+    }
+
+    function getGroups() {
+      fetch("api/allgroups.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: "ticket="+ encodeURIComponent(localStorage.getItem("ticket"))
+      })
+      .then(response => response.json())
+      .then(output => {
+        if (output === 0) { window.location.href = "login.html"; return; }
+        let htmlContent = '';
+        for (let i = 0; i < output.length; i++) {
+        htmlContent += `
+            <article>
+              <a href="group.html"><strong>${escapeHtml(output[i].name)}</strong></a>
+              <p><small>${escapeHtml(output[i].description)}</small></p>
+               <p><small>${escapeHtml(output[i].invite_code)}</small></p>
+            </article>
+        `;
+        }
+        htmlContent += `<button style="border-style: dashed;" onclick="addGroup.showModal()">+ Create or join a group</button>`;
+ 
+
+        document.getElementById("grid").innerHTML = htmlContent;
+      })
+      .catch(() => alert("Could not reach the server"));
+    }
+
+    
+    window.addEventListener("load", () => {
+      getGroups();
+
+    });
+  </script>
 </head>
 <body>
   <!-- 2a · Home — includes 2b profile + 2c add group popups -->
@@ -30,66 +161,37 @@
     <strong>[App name]</strong>
     <nav>
       <button class="primary" onclick="addGroup.showModal()">+ Add group</button>
-      <button onclick="profile.showModal()">Profile</button>
+      <button onclick="loadProfile()">Profile</button>
     </nav>
   </header>
 
   <main>
     <h2>My groups</h2>
-    <div class="grid">
-      <article>
-        <a href="group.html"><strong>[Group name A]</strong></a> <small>· Leader</small>
-        <p><small>[n] members · [n] notes · you are #1</small></p>
-      </article>
-      <article>
-        <a href="group.html"><strong>[Group name B]</strong></a>
-        <p><small>[n] members · [n] notes · you are #3</small></p>
-      </article>
-      <article>
-        <a href="group.html"><strong>[Group name C]</strong></a>
-        <p><small>[n] members · [n] notes · you are #2</small></p>
-      </article>
-      <article>
-        <a href="group.html"><strong>[Group name D]</strong></a>
-        <p><small>[n] members · [n] notes · you are #4</small></p>
-      </article>
-      <article>
-        <a href="group.html"><strong>[Group name E]</strong></a> <small>· Leader</small>
-        <p><small>[n] members · [n] notes · you are #1</small></p>
-      </article>
+    <div class="grid" id="grid">
       <button style="border-style: dashed;" onclick="addGroup.showModal()">+ Create or join a group</button>
     </div>
   </main>
 
-  <!-- 2b · Profile popup -->
-  <dialog id="profile">
-    <div class="row"><h3>Profile</h3><form method="dialog"><button aria-label="Close">&times;</button></form></div>
-    <p><strong>[Name]</strong><br><small>[email@school.edu]</small></p>
-    <p>Groups joined: <strong>[n]</strong> · Quizzes taken: <strong>[n]</strong></p>
-    <table>
-      <tr><td>[Group name A]</td><td><small>Leader</small></td></tr>
-      <tr><td>[Group name B]</td><td><small>Member</small></td></tr>
-      <tr><td>[Group name C]</td><td><small>Member</small></td></tr>
-    </table>
-    <p><a href="index.html" class="button">Log out</a></p>
-  </dialog>
-
-  <!-- 2c · Add group popup -->
+  <dialog id="profile"></dialog>
   <dialog id="addGroup">
     <div class="row"><h3>Add group</h3><form method="dialog"><button aria-label="Close">&times;</button></form></div>
-    <form action="#" method="post">
+    <div>
       <label>Join with a group code
-        <input type="text" name="code" placeholder="e.g. 7F3L-2KQ9" required>
+        <input type="text" id="code" placeholder="e.g. 7F3L-2KQ9" required>
       </label>
-      <button type="submit" class="primary">Join</button>
-    </form>
+      <button onclick="joinGroup() " class="primary">Join</button>
+    </div>
     <p style="text-align: center;"><small>or</small></p>
-    <form action="#" method="post">
+    <div action="#" method="post">
       <label>Create a new group
-        <input type="text" name="group_name" placeholder="Group name" required>
+        <input type="text" id="group_name" placeholder="Group name" required>
+        <input type="text" id="description" placeholder="Description" required>
+
       </label>
-      <button type="submit">Create</button>
+      <button onclick="createGroup()">Create</button>
     </form>
   </dialog>
+
+
 </body>
 </html>
