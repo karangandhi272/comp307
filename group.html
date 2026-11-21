@@ -22,19 +22,23 @@
     .row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
     table { width: 100%; border-collapse: collapse; }
     th, td { text-align: left; padding: 6px; border-bottom: 1px solid var(--line); }
+    #notePreview { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 400px; overflow-y: auto;}
   </style>
+  <script src="cleanhtml.js"></script>
+  <script src="group.js"></script>
 </head>
 <body>
   <!-- 3a · Group page — includes 3b quiz, 3c results, 3d upload popups -->
   <header>
     <div>
       <a href="home.html">&larr; Home</a>
-      <strong>[Group name]</strong> <small>[n] members · led by [leader]</small>
+      <strong id="groupName">Group</strong> <small id="groupMeta"></small>
     </div>
     <nav>
-      <small>Code</small> <code>7F3L-2KQ9</code>
-      <button>Copy</button>
+      <small>Code</small> <code id="inviteCode"></code>
+      <button onclick="copyCode(this)">Copy</button>
       <button class="primary" onclick="quiz.showModal()">Start quiz</button>
+      <button onclick="leaveGroup()">Leave</button>
     </nav>
   </header>
 
@@ -56,7 +60,7 @@
         <h3>Shared notes</h3>
         <button onclick="upload.showModal()">+ Upload</button>
       </div>
-      <table>
+      <table id="notesList">
         <tr><td>[Topic] lecture notes.txt<br><small>by [Member]</small></td></tr>
         <tr><td>[Topic] lecture notes.txt<br><small>by [Member]</small></td></tr>
         <tr><td>[Topic] lecture notes.txt<br><small>by [Member]</small></td></tr>
@@ -64,13 +68,25 @@
     </section>
 
     <section>
-      <h3>Note preview</h3>
-      <pre>[Selected note contents...]</pre>
+      <div class="row">
+        <h3 id="previewTitle">Note preview</h3>
+        <button id="editBtn" onclick="startEdit()" hidden>Edit</button>
+      </div>
+      <pre id="notePreview">Click a note to read it.</pre>
+
+      <div id="editArea" hidden>
+        <input id="editTitle" placeholder="Title">
+        <textarea id="editContent" rows="12" style="width: 100%; font: inherit;"></textarea>
+        <div>
+          <button onclick="cancelEdit()">Cancel</button>
+          <button class="primary" onclick="saveEdit()">Save</button>
+        </div>
+      </div>
     </section>
 
     <section>
-      <h3>Members ([n])</h3>
-      <table>
+      <h3 id="membersTitle">Members ([n])</h3>
+      <table id="membersList">
         <tr><td>[Member 1]</td><td><small>Leader</small></td></tr>
           <tr><td>[Member 2]</td><td><button>Remove</button></td></tr>
           <tr><td>[Member 3]</td><td><button>Remove</button></td></tr>
@@ -116,8 +132,8 @@
   <!-- 3d · Upload notes popup -->
   <dialog id="upload">
     <div class="row"><h3>Upload notes</h3><form method="dialog"><button aria-label="Close">&times;</button></form></div>
-    <form action="#" method="post" enctype="multipart/form-data">
-      <p><input type="file" name="notes" accept=".txt" multiple></p>
+    <form onsubmit="uploadNote(event)">
+      <p><input type="file" id="noteFile" accept=".txt" required></p>
       <p><small>TXT files only. Notes are shared with everyone in this group.</small></p>
       <div class="row">
         <button type="button" onclick="upload.close()">Cancel</button>

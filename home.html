@@ -134,7 +134,7 @@
         for (let i = 0; i < output.length; i++) {
         htmlContent += `
             <article>
-              <a href="group.html"><strong>${escapeHtml(output[i].name)}</strong></a>
+              <a href="group.html?id=${output[i].id}"><strong>${escapeHtml(output[i].name)}</strong></a>
               <p><small>${escapeHtml(output[i].description)}</small></p>
                <p><small>${escapeHtml(output[i].invite_code)}</small></p>
             </article>
