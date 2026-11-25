@@ -23,7 +23,8 @@ CREATE TABLE study_groups (
   description TEXT,
   invite_code VARCHAR(20) NOT NULL UNIQUE,
   created_by  INTEGER REFERENCES users(id),
-  created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  quiz_cooldown_until TIMESTAMP -- create-quiz.php: no new quiz generation for this group until then
 );
 
 CREATE TABLE group_members (
