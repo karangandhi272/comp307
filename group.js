@@ -155,34 +155,16 @@ function showMembers(members, me) {
   document.getElementById("membersList").innerHTML = html;
 }
 
-// The leaderboard rows and the current user from the last loadGroup(), so the view dropdown can redraw without reloading
-let leaderboardRows = [];
-let leaderboardMe = null;
-
-// Saves the leaderboard from the server, then draws the selected view
+// Constructs the leaderboard. The server sorts it by max score (best score per quiz, summed),
+// and members with equal max scores share a rank.
 function showLeaderboard(rows, me) {
-  leaderboardRows = rows;
-  leaderboardMe = me;
-  drawLeaderboard();
-}
-
-// Draws the selected view. "best": best score per quiz plus attempts including retakes. "first": first attempts only.
-// Rows are sorted by that view's score and members with equal scores share a rank.
-function drawLeaderboard() {
-  const best = document.getElementById("leaderboardView").value === "best";
-  const key = best ? "points" : "first_points";
-  const rows = [...leaderboardRows].sort((a, b) => b[key] - a[key] || a.display_name.localeCompare(b.display_name));
-
-  document.getElementById("leaderboardHead").innerHTML =
-    `<tr><th>#</th><th>Member</th><th>Notes</th><th>Quizzes</th>${best ? "<th>Tries</th>" : ""}<th>Score</th></tr>`;
-
   let html = "";
   let rank = 0;
   for (let i = 0; i < rows.length; i++) {
     const row = rows[i];
-    if (i === 0 || row[key] !== rows[i - 1][key]) rank = i + 1;
+    if (i === 0 || row.points !== rows[i - 1].points) rank = i + 1;
 
-    const you = row.user_id === leaderboardMe.user_id ? " <small>(you)</small>" : "";
+    const you = row.user_id === me.user_id ? " <small>(you)</small>" : "";
 
     html += `
           <tr>
@@ -190,8 +172,9 @@ function drawLeaderboard() {
             <td>${escapeHtml(row.display_name)}${you}</td>
             <td>${row.notes}</td>
             <td>${row.quizzes_taken}</td>
-            ${best ? `<td>${row.attempts}</td>` : ""}
-            <td><strong>${row[key]}</strong>/${row.possible}</td>
+            <td>${row.attempts}</td>
+            <td>${row.first_points}/${row.possible}</td>
+            <td><strong>${row.points}</strong>/${row.possible}</td>
           </tr>`;
   }
   document.getElementById("leaderboardList").innerHTML = html;

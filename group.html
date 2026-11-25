@@ -18,8 +18,8 @@
     article, section, dialog { background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 16px; }
     dialog { width: min(460px, 92vw); }
     dialog::backdrop { background: rgb(0 0 0 / 0.45); }
-    /* 3 columns: Leaderboard / Quizzes / Members on top, then the notes list and a 2-column-wide reader. */
-    .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+    /* 3 columns: Leaderboard (widest) / Quizzes / Members (narrowest) on top, then the notes list and a 2-column-wide reader. */
+    .grid { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 0.8fr); gap: 16px; }
     .wide { grid-column: span 2; }
     @media (max-width: 760px) {
       .grid { grid-template-columns: 1fr; }
@@ -28,9 +28,10 @@
     .row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
     table { width: 100%; border-collapse: collapse; }
     th, td { text-align: left; padding: 6px; border-bottom: 1px solid var(--line); }
-    /* Leaderboard has 6 columns in a narrow card, so tighter cells and the score kept on one line */
-    #leaderboardHead th, #leaderboardList td { padding: 6px 4px; font-size: 14px; }
-    #leaderboardList td:last-child { white-space: nowrap; }
+    /* 7 columns in a one-column card: short headers (full names on hover) and tight cells. */
+    #leaderboard th, #leaderboard td { padding: 6px 3px; font-size: 13px; white-space: nowrap; }
+    #leaderboard th { vertical-align: bottom; line-height: 1.2; }   /* one-line headers line up with the second line of two-line ones */
+    #leaderboard th[title] { cursor: help; }
     #notePreview { font: inherit; white-space: pre-wrap; overflow-wrap: anywhere; max-height: 500px; overflow-y: auto; margin: 0; }
     #notesList tr.selected { background: #eef3ef; }
     #notesList tr.selected td:first-child { box-shadow: inset 3px 0 var(--accent); }
@@ -54,17 +55,23 @@
 
   <main class="grid">
     <section>
-      <div class="row">
-        <h3>Leaderboard</h3>
-        <select id="leaderboardView" onchange="drawLeaderboard()">
-          <option value="best">Best scores</option>
-          <option value="first">First attempts</option>
-        </select>
+      <h3>Leaderboard</h3>
+      <div style="overflow-x: auto;">
+        <table id="leaderboard">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Member</th>
+              <th title="Notes uploaded">Notes<br>uploaded</th>
+              <th title="Quizzes completed">Quizzes<br>done</th>
+              <th title="Quizzes attempted, including retakes">Quiz<br>tries</th>
+              <th title="First try score">First<br>score</th>
+              <th title="Max score">Max<br>score</th>
+            </tr>
+          </thead>
+          <tbody id="leaderboardList"></tbody>
+        </table>
       </div>
-      <table>
-        <thead id="leaderboardHead"></thead>
-        <tbody id="leaderboardList"></tbody>
-      </table>
     </section>
 
     <section>
