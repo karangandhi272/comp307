@@ -9,8 +9,9 @@ if ($email == '' or $pass == '') {
 
 $db = db(); 
 
-$row =  query("SELECT * FROM users WHERE pass_hash = ? AND email = ?", [$pass, $email])->fetch();
-if ($row) {
+// Look the user up by email only, then check the password against the stored hash.
+$row =  query("SELECT * FROM users WHERE email = ?", [$email])->fetch();
+if ($row and password_verify($pass, $row["pass_hash"])) {
     $t =  bin2hex(random_bytes(32)); 
     query("INSERT INTO sessions (token, user_id, expires_at) VALUES (?, ?, datetime('now', '+1 month'))", [$t, $row["id"]]);
     echo $t;

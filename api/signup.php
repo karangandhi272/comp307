@@ -14,10 +14,11 @@ if ($row){
     die("0");
 }
 
-query("INSERT INTO users (display_name, pass_hash, email) VALUES (?, ?, ?)", [$name, $pass, $email]);
-$row =  query("SELECT * FROM users WHERE pass_hash = ? AND email = ?", [$pass, $email])->fetch();
-$t =  bin2hex(random_bytes(32)); 
-query("INSERT INTO sessions (token, user_id, expires_at) VALUES (?, ?, datetime('now', '+1 month'))", [$t, $row["id"]]);
+// Store a salted hash, never the password itself.
+query("INSERT INTO users (display_name, pass_hash, email) VALUES (?, ?, ?)", [$name, password_hash($pass, PASSWORD_DEFAULT), $email]);
+$userId = db()->lastInsertId();
+$t =  bin2hex(random_bytes(32));
+query("INSERT INTO sessions (token, user_id, expires_at) VALUES (?, ?, datetime('now', '+1 month'))", [$t, $userId]);
 echo $t;
 
 ?>
