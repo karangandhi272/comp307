@@ -484,6 +484,7 @@ function startEdit() {
 // Leaves edit mode without saving.
 function cancelEdit() {
   document.getElementById("editArea").hidden = true;
+  document.getElementById("conflictBox").hidden = true;
   document.getElementById("notePreview").hidden = false;
   document.getElementById("editBtn").hidden = (currentNote === null);
   if (currentNote === null) document.getElementById("previewTitle").textContent = "Note preview";   // Cancelled a new note.
@@ -512,11 +513,23 @@ function saveEdit() {
 
   api("edittxt.php", { note_id: currentNote.id, title: title, content: content, version: currentNote.version })
     .then(output => {
-      if (output === 0) {
-        alert("Someone else edited this note (or it was deleted). Loading the latest version.");
-      }
-      showNote(currentNote.id);   // Show the latest note.
+      if (output === 0) { showConflict(); return; }
+      showNote(currentNote.id);   // Show the saved note.
       loadGroup();
+    }).catch(err => { console.log(err); alert("Could not reach the server"); });
+}
+
+// Someone else saved first. Keeps the user's text in the editor, shows the other version above it,
+// and moves to the latest version number so the next Save goes through.
+function showConflict() {
+  api("getnote.php", { note_id: currentNote.id })
+    .then(latest => {
+      if (latest === 0) { alert("This note was deleted."); resetPreview(); loadGroup(); return; }
+      currentNote = { id: currentNote.id, title: latest.title, content: latest.content, version: latest.version };
+      document.getElementById("previewTitle").textContent = latest.title;
+      document.getElementById("notePreview").textContent = latest.content;
+      document.getElementById("theirVersion").textContent = latest.content;
+      document.getElementById("conflictBox").hidden = false;
     }).catch(err => { console.log(err); alert("Could not reach the server"); });
 }
 
