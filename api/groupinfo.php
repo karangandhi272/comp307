@@ -1,6 +1,7 @@
 <?php
 // Returns the whole Group page.
 require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/quiz_lib.php';
 
 $t = trim($_POST["ticket"] ?? '');
 $groupId = trim($_POST["group_id"] ?? '');
@@ -51,9 +52,8 @@ $notes = query(
         [$groupId]
 )->fetchAll();
 
-// Add quiz list and get_leaderboard($groupId).
-$quizzes = [];
-$leaderboard = [];
+$quizzes = get_quiz_list($groupId, $user["id"]);
+$leaderboard = get_leaderboard($groupId);
 
 header('Content-Type: application/json');
 echo json_encode([
