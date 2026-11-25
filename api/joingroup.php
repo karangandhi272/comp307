@@ -12,7 +12,7 @@ $db = db();
 
 $group =  query("SELECT * FROM study_groups WHERE invite_code = ? ", [$group_code])->fetch();
 if ($group){
-    $user = query("SELECT users.* FROM sessions JOIN users ON users.id = sessions.user_id WHERE sessions.token = ?", [$t])->fetch();
+    $user = query("SELECT users.* FROM sessions JOIN users ON users.id = sessions.user_id WHERE sessions.token = ? AND sessions.expires_at > datetime('now')", [$t])->fetch();
     if (!$user) die("0");
     $exists = query("SELECT * FROM group_members WHERE group_id = ? AND user_id = ? ", [$group["id"], $user["id"]])->fetch();
 

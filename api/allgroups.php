@@ -8,17 +8,20 @@ if ($t == '') {
 }
 
 $db = db(); 
-$user = query("SELECT users.* FROM sessions JOIN users ON users.id = sessions.user_id WHERE sessions.token = ?", [$t])->fetch();
+$user = query("SELECT users.* FROM sessions JOIN users ON users.id = sessions.user_id WHERE sessions.token = ? AND sessions.expires_at > datetime('now')", [$t])->fetch();
 if (!$user) die("0");
-$groups =  query("SELECT group_id FROM group_members WHERE user_id = ? ", [$user["id"]])->fetchAll();
+// Each of the user's groups with their role in it and how many members it has.
+$out = query(
+    "SELECT g.id, g.name, g.description, g.invite_code, gm.role,
+        (SELECT COUNT(*) FROM group_members m WHERE m.group_id = g.id) AS member_count
+    FROM group_members gm
+    JOIN study_groups g ON g.id = gm.group_id
+    WHERE gm.user_id = ?
+    ORDER BY g.name",
+    [$user["id"]]
+)->fetchAll();
 
-
-$out = [];
 header('Content-Type: application/json');
-foreach ($groups as $r) {
-    $out[] = (query("SELECT * FROM study_groups WHERE id = ? ", [$r["group_id"]])->fetch());
-}
-
 echo json_encode($out);
 
 
